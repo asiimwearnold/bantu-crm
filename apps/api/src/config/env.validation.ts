@@ -126,6 +126,13 @@ export class EnvironmentVariables {
 
 	@IsOptional()
 	@IsString()
+	@MinLength(32, {
+		message: "BANTU_WORKER_TOKEN must contain at least 32 characters.",
+	})
+	BANTU_WORKER_TOKEN?: string;
+
+	@IsOptional()
+	@IsString()
 	@Matches(/^[A-Za-z0-9+/]{43}=$/, {
 		message: "MCP_ENCRYPTION_KEY must contain exactly 32 base64-encoded bytes.",
 	})

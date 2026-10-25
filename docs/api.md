@@ -311,3 +311,14 @@ Read it before touching any amount, total, chart or rate.
 - **Background writes need polling, not invalidation** — `refetchInterval` while
   `PENDING`/`RUNNING`, via `isEnriching()` and `ENRICHMENT_POLL_MS`. **Lists poll too,
   not just the sheet.**
+
+## BANTU task execution
+
+- BANTU task drafts and approvals use authenticated tRPC procedures. Workspace
+  members create tasks; owners and admins approve or retry them.
+- Approval requires explicit repository-rights confirmation. It queues work only;
+  it does not merge or deploy.
+- The separate BANTU worker uses `/internal/bantu/*` with `BANTU_WORKER_TOKEN`.
+  Keep this secret out of browser and user-facing APIs.
+- The worker renews task leases and reports results. An expired lease fails the task;
+  an owner or admin must retry it.

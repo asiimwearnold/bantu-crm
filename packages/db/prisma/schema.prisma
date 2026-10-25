@@ -36,6 +36,8 @@ model User {
   createdAgentDefinitions AgentDefinition[]             @relation("AgentDefinitionCreator")
   createdAgentVersions    AgentVersion[]                @relation("AgentVersionCreator")
   createdAgentTriggers    AgentTrigger[]                @relation("AgentTriggerCreator")
+  createdBantuTasks       BantuTask[]                   @relation("BantuTaskCreator")
+  approvedBantuTasks      BantuTask[]                   @relation("BantuTaskApprover")
   initiatedAgentRuns      AgentRun[]                    @relation("AgentRunInitiator")
   agentAuditEvents        AgentAuditEvent[]             @relation("AgentAuditActor")
   conversationShares      AgentConversationShare[]      @relation("ConversationShareCreator")
@@ -369,6 +371,15 @@ enum AgentRunStatus {
   CANCELLED
 }
 
+enum BantuTaskStatus {
+  DRAFT
+  QUEUED
+  RUNNING
+  PAUSED
+  DONE
+  FAILED
+}
+
 enum AgentActionStatus {
   PLANNED
   RUNNING
@@ -638,8 +649,8 @@ model AgentEvent {
 
   emittedAt DateTime
 
-  @@index([sessionId, emittedAt])
   @@unique([sessionId, streamIndex])
+  @@index([sessionId, emittedAt])
   @@index([contactId, emittedAt])
   @@index([conversationId, emittedAt])
   @@map("agentEvent")
@@ -813,6 +824,30 @@ model AgentDefinition {
   @@index([status, updatedAt])
   @@index([createdById, createdAt])
   @@map("agentDefinition")
+}
+
+model BantuTask {
+  id           String          @id @default(cuid())
+  repository   String
+  request      String          @db.Text
+  status       BantuTaskStatus @default(DRAFT)
+  branch       String?
+  report       String?         @db.Text
+  failure      String?         @db.Text
+  workerId     String?
+  leaseUntil   DateTime?
+  startedAt    DateTime?
+  finishedAt   DateTime?
+  createdById  String
+  createdBy    User            @relation("BantuTaskCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  approvedById String?
+  approvedBy   User?           @relation("BantuTaskApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([status, createdAt])
+  @@index([leaseUntil])
+  @@map("bantuTask")
 }
 
 model AgentVersion {

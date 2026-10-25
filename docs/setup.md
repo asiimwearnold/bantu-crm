@@ -49,6 +49,36 @@ AGENT_BRIDGE_SECRET="$(openssl rand -base64 32)"
 the bridge — send `-H 'Host: agent.example.com'`. `GET /eve/v1/info` is the whole
 inventory, including a `diagnostics` count that finds files eve silently ignored.
 
+## BANTU worker
+
+BANTU runs as a separate process. The CRM stores approved tasks and exposes
+authenticated internal endpoints. The worker claims tasks, runs the BANTU review
+gates, and pushes a task branch. It does not merge or deploy.
+
+1. Set `BANTU_WORKER_TOKEN` in the CRM API environment and the BANTU worker
+   environment. Use the same random value in both places:
+
+   ```sh
+   openssl rand -base64 32
+   ```
+
+2. Set `BANTU_CRM_API_URL` and `BANTU_PROJECTS_ROOT` in the worker's `.env`.
+   Keep the worker outside the CRM process and protect its `.env`.
+3. Build the BANTU sandbox image and check the worker host:
+
+   ```sh
+   docker build -t bantu-sandbox -f docker/Dockerfile.sandbox docker/
+   python -m bantu doctor
+   ```
+
+4. Start the worker with `python -m bantu worker`.
+
+The worker accepts public HTTPS Git URLs only. An owner or admin must approve
+each task and confirm repository rights. Review each pushed branch before merge.
+Run the worker on a restricted host. Its URL check does not stop DNS rebinding or
+redirects to private network addresses. Block private and reserved network ranges
+at the worker's outbound firewall before you enable task execution.
+
 ## Running the agent
 
 The agent package's default `dev` command is interactive `eve dev`. The root
