@@ -13,6 +13,9 @@ import { ApiExcludeController } from "@nestjs/swagger";
 import { AllowAnonymous } from "@thallesp/nestjs-better-auth";
 import type { EnvironmentVariables } from "../config/env.validation";
 import {
+	type BantuClaimInput,
+	type BantuCompleteInput,
+	type BantuHeartbeatInput,
 	bantuClaimInput,
 	bantuCompleteInput,
 	bantuHeartbeatInput,
@@ -35,7 +38,7 @@ export class BantuWorkerController {
 	@AllowAnonymous()
 	async claim(
 		@Headers("authorization") authorization: string | undefined,
-		@Body() body: unknown,
+		@Body() body: BantuClaimInput,
 	) {
 		this.authorize(authorization);
 		const input = bantuClaimInput.safeParse(body);
@@ -49,7 +52,7 @@ export class BantuWorkerController {
 	async heartbeat(
 		@Headers("authorization") authorization: string | undefined,
 		@Param("id") id: string,
-		@Body() body: unknown,
+		@Body() body: BantuHeartbeatInput,
 	) {
 		this.authorize(authorization);
 		const input = bantuHeartbeatInput.safeParse(body);
@@ -63,7 +66,7 @@ export class BantuWorkerController {
 	async complete(
 		@Headers("authorization") authorization: string | undefined,
 		@Param("id") id: string,
-		@Body() body: unknown,
+		@Body() body: BantuCompleteInput,
 	) {
 		this.authorize(authorization);
 		const input = bantuCompleteInput.safeParse(body);

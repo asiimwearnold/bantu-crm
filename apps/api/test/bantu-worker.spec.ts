@@ -8,7 +8,9 @@ import type { EnvironmentVariables } from "../src/config/env.validation";
 
 const token = "t".repeat(32);
 
-function controller(service: object = { claim: async () => null }) {
+function controller(
+	service: Pick<BantuService, "claim"> = { claim: async () => null },
+) {
 	const config = new ConfigService({
 		BANTU_WORKER_TOKEN: token,
 	}) as ConfigService<EnvironmentVariables, true>;

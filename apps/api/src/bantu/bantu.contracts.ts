@@ -74,3 +74,6 @@ export const bantuCompleteInput = bantuClaimInput.extend({
 
 export type CreateBantuTaskInput = z.infer<typeof createBantuTaskInput>;
 export type BantuTask = z.infer<typeof bantuTaskOutput>;
+export type BantuClaimInput = z.infer<typeof bantuClaimInput>;
+export type BantuHeartbeatInput = z.infer<typeof bantuHeartbeatInput>;
+export type BantuCompleteInput = z.infer<typeof bantuCompleteInput>;
